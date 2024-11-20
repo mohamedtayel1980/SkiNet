@@ -36,5 +36,29 @@ namespace API.Controllers
             await context.SaveChangesAsync();
             return Ok(product);
         }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> UpdateProduct(int id,Product product) {
+            if (product.Id != id || !ProductExits(id)) 
+                return BadRequest("Product not found ");
+            context.Entry(product).State = EntityState.Modified;
+            await context.SaveChangesAsync();
+            return Ok(product);
+        }
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> RemoveProduct(int id)
+        {
+           
+            var product=await context.Products.FindAsync(id); 
+            if (product == null) return NotFound();
+            context.Products.Remove(product);
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
+        private bool ProductExits(int id)
+        {
+            return context.Products.Any(x => x.Id == id);
+        }
+
     }
 }
